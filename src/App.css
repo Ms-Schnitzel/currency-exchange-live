@@ -36,3 +36,51 @@
     transform: rotate(360deg);
   }
 }
+
+.border-test {
+  border: 1px solid red;
+}
+
+.container {
+  max-width: 90%;
+}
+
+.scroll {
+  
+  max-height: 150px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+@media only screen and (min-width: 768px) {
+  .scroll {max-height: 600px;}
+} 
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.background {
+  background: #eaf4f4;
+  margin-top: 2%;
+  margin-left: 5%;
+  margin-right: 5%;
+  border: 5px solid silver;
+  border-radius: 50px;
+}
+
+body {
+  background: url(./marble-bg.jpg);
+}
+
+.social-align {
+  align-self: flex-end;
+}
