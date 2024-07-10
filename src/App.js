@@ -1,5 +1,4 @@
-import logo from './logo.svg';
-import 'bootstrap/dist/css/bootstrap.css';
+import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";import 'bootstrap/dist/css/bootstrap.css';
 import './App.css';
 import Dropdown from './Dropdown.js';
 import Rates from './Rates.js';
@@ -83,6 +82,7 @@ function App() {
 
 
   return (
+    <Router basename="/currency-exchange-live"></Router>
     <main>
       
       <div className="background">
