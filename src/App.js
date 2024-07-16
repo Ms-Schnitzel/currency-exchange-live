@@ -3,31 +3,35 @@ import 'bootstrap/dist/css/bootstrap.css';
 import './App.css';
 import Dropdown from './Dropdown.js';
 import Rates from './Rates.js';
-import { useState } from 'react';
-import $ from 'jquery';
+import { useState, useEffect } from 'react';
 // import Rates from './Rates.js';
 
 function App() {
 
-  const [input, setInput] = useState("");
-  const [output, setOutput] = useState("");
-  const [inbox, setInbox] = useState("");
-  const [outbox, setOutbox] = useState("");
-  const [outval, setOutval] = useState("");
-  // setInbox("0");
-  // setOutbox("0");
-  // setInbox(document.querySelector('#input-box'));
-  // setOutbox(document.querySelector('#output-box'));
-  // let getInput = "";
-  // let getOutput = "";
+  const [input, setInput] = useState("usd");
+  const [output, setOutput] = useState("usd");
+  const [inbox, setInbox] = useState(0);
+  const [outbox, setOutbox] = useState(0);
+  const [exchange, setExchange] = useState(3);
 
+
+  useEffect(() => {
+    
+    console.log("input : ", input);
+    console.log("output : ", output);
+    if (input !== output) {
+      apiInput();
+      handleOutboxUpdate();
+      return;
+    } else {
+      setExchange(1);
+      handleOutboxUpdate();
+      return;
+    }
+  }, [input, output, exchange]);
   
 
   const apiInput = async () => {
-    let valInbox = document.querySelector('#input-box');
-    let valOutbox = document.querySelector('#output-box');
-    setInput(document.querySelector('#input-drop select').value);
-    setOutput(document.querySelector('#output-drop select').value);
     fetch(`https://api.frankfurter.app/latest?from=${input}&to=${output}`).then((response) => {
       if (response.ok) {
         return response.json();
@@ -36,16 +40,7 @@ function App() {
     }).then((data) => {
       console.log("json response: ", data);      
       let exRate = data.rates[output];
-      
-      setInbox(valInbox.value);
-      console.log("val in: ", valInbox.value);
-      valOutbox.value = parseInt(inbox) * exRate;
-      setOutbox(valOutbox.value);
-      
-      
-      console.log(exRate);
-      console.log("input box: ", inbox);
-      console.log("output box: ", outbox);
+      setExchange(exRate);
 
       return
 
@@ -56,44 +51,53 @@ function App() {
 
   //======================================================================================
 
-  const handleValUpdate = () => {
-    setInput(document.querySelector('#input-drop select').value);
-    // console.log(document.querySelector('#input-drop select').value)
-    setOutput(document.querySelector('#output-drop select').value);
-    // console.log(document.querySelector('#output-drop select').value)
 
 
-    if (input === output) {
-      setOutbox(inbox);
-      return;
-    }
 
-    apiInput();
+  const handleDropUpdate = () => {
+    let valIn1 = document.querySelector('#input-drop select').value;
+    setInput(valIn1);
+    let valOut1 = document.querySelector('#output-drop select').value;
+    setOutput(valOut1);
+    handleOutboxUpdate();
+    
+    return;
+  }
+
+  
+
+
+  const handleOutboxUpdate = () => {
+    let valInbox = document.querySelector('#input-box').value;
+    let valOutbox = valInbox * exchange;
+    setOutbox(valOutbox);
+    console.log(input);
+    return;
   }
 
   let timer;
   function conDelay() {
     clearTimeout(timer);
     timer = setTimeout(() => {
-      apiInput();
+      handleOutboxUpdate();
     }, 500);
     return;
   }
-  function conDelay() {
-    handleValUpdate();
-  }
+
 
   const handleValSwitch = () => {
-    let valIn = $("#input-drop").find('select').val();
-    let valOut = $("#output-drop").find('select').val();
+    let boxIn = document.querySelector("#input-drop select");
+    let boxOut = document.querySelector("#output-drop select");
+    let valIn = boxIn.value;
+    let valOut = boxOut.value;
 
-    $("#input-drop").find('select').val(valOut);
-    $("#output-drop").find('select').val(valIn);
-
-    handleValUpdate();
+    boxIn.value = valOut;
+    boxOut.value = valIn;
+    
+    handleDropUpdate();
   }
 
-  
+
 
   return (
     <main>
@@ -125,7 +129,7 @@ function App() {
                   <div 
                   className="col-4" 
                   id="input-drop"
-                  onChange={() => apiInput()}
+                  onChange={() => handleDropUpdate()}
                   >
                     <Dropdown />
                   </div>
@@ -134,14 +138,14 @@ function App() {
                     <button 
                     type="button" 
                     className="btn btn-secondary py-0 mx-1"
-                    onClick={() => apiInput()}>
+                    onClick={() => handleValSwitch()}>
                       <i className="fa-solid fa-arrow-right-arrow-left"></i>
                     </button>
                   </div>
                   <div 
                   className="col-4" 
                   id="output-drop"
-                  onChange={() => apiInput()}
+                  onChange={() => handleDropUpdate()}
                   >
                     <Dropdown />
                   </div>
@@ -155,6 +159,7 @@ function App() {
                   className="col-4 border border-2 border-dark rounded p-2" 
                   id="input-box" 
                   type="number"
+                  
                   onChange={() => conDelay()}
                   />
                   <div className="col-4 col-md-2 d-flex align-items-center justify-content-center border border-2 border-dark rounded bg-light p-1">
@@ -178,3 +183,6 @@ function App() {
 }
 
 export default App;
+
+
+
