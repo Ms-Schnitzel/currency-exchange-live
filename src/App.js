@@ -1,45 +1,46 @@
+import 'bootstrap/dist/css/bootstrap.css';
 import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";import 'bootstrap/dist/css/bootstrap.css';
 import './App.css';
 import Dropdown from './Dropdown.js';
 import Rates from './Rates.js';
-import $ from 'jquery';
+import { useState, useEffect } from 'react';
 // import Rates from './Rates.js';
 
 function App() {
 
-  // fetch('https://api.frankfurter.app/latest').then((response) => {
-  //   if (response.ok) {
-  //     return response.json();
-  //   }
-  //   throw new Error ('Request was either a 404 or 500');
-  // }).then((data) => {
-  //   console.log('json data: ', data);
-  // }).catch((error) => {
-  //   console.log(error);
-  // })
+  const [input, setInput] = useState("usd");
+  const [output, setOutput] = useState("usd");
+  const [inbox, setInbox] = useState(0);
+  const [outbox, setOutbox] = useState(0);
+  const [exchange, setExchange] = useState(3);
 
-  
 
-  let getInput = "";
-  let getOutput = "";
-
+  useEffect(() => {
+    
+    console.log("input : ", input);
+    console.log("output : ", output);
+    if (input !== output) {
+      apiInput();
+      handleOutboxUpdate();
+      return;
+    } else {
+      setExchange(1);
+      handleOutboxUpdate();
+      return;
+    }
+  }, [input, output, exchange]);
   
 
   const apiInput = async () => {
-    fetch(`https://api.frankfurter.app/latest?from=${getInput}&to=${getOutput}`).then((response) => {
+    fetch(`https://api.frankfurter.app/latest?from=${input}&to=${output}`).then((response) => {
       if (response.ok) {
         return response.json();
       }
       throw new Error('Request was either a 404 or 500');
     }).then((data) => {
-      console.log("json response: ", data);
-      let inputBox = $('#input-box');
-      let outputBox = $('#output-box');
-      let exRate = data.rates[getOutput];
-      console.log(exRate);
-      console.log("input box: ", inputBox.val());
-
-      outputBox.val(inputBox.val() * exRate);
+      console.log("json response: ", data);      
+      let exRate = data.rates[output];
+      setExchange(exRate);
 
       return
 
@@ -48,35 +49,52 @@ function App() {
     })
   }
 
-  const handleValUpdate = () => {
-    getInput = $("#input-drop").find('select').val();
-    getOutput = $("#output-drop").find('select').val();
-    let inputBox = $('#input-box');
-    let outputBox = $('#output-box');
-    if (getInput === getOutput) {
-      outputBox.val(inputBox.val());
-      return outputBox;
-    }
-    apiInput();
+  //======================================================================================
+
+
+
+
+  const handleDropUpdate = () => {
+    let valIn1 = document.querySelector('#input-drop select').value;
+    setInput(valIn1);
+    let valOut1 = document.querySelector('#output-drop select').value;
+    setOutput(valOut1);
+    handleOutboxUpdate();
+    
+    return;
+  }
+
+  
+
+
+  const handleOutboxUpdate = () => {
+    let valInbox = document.querySelector('#input-box').value;
+    let valOutbox = valInbox * exchange;
+    setOutbox(valOutbox);
+    console.log(input);
+    return;
   }
 
   let timer;
   function conDelay() {
     clearTimeout(timer);
     timer = setTimeout(() => {
-      handleValUpdate();
+      handleOutboxUpdate();
     }, 500);
     return;
   }
 
+
   const handleValSwitch = () => {
-    let valIn = $("#input-drop").find('select').val();
-    let valOut = $("#output-drop").find('select').val();
+    let boxIn = document.querySelector("#input-drop select");
+    let boxOut = document.querySelector("#output-drop select");
+    let valIn = boxIn.value;
+    let valOut = boxOut.value;
 
-    $("#input-drop").find('select').val(valOut);
-    $("#output-drop").find('select').val(valIn);
-
-    handleValUpdate();
+    boxIn.value = valOut;
+    boxOut.value = valIn;
+    
+    handleDropUpdate();
   }
 
 
@@ -112,7 +130,7 @@ function App() {
                   <div 
                   className="col-4" 
                   id="input-drop"
-                  onChange={() => handleValUpdate()}
+                  onChange={() => handleDropUpdate()}
                   >
                     <Dropdown />
                   </div>
@@ -128,7 +146,7 @@ function App() {
                   <div 
                   className="col-4" 
                   id="output-drop"
-                  onChange={() => handleValUpdate()}
+                  onChange={() => handleDropUpdate()}
                   >
                     <Dropdown />
                   </div>
@@ -142,12 +160,13 @@ function App() {
                   className="col-4 border border-2 border-dark rounded p-2" 
                   id="input-box" 
                   type="number"
+                  
                   onChange={() => conDelay()}
                   />
                   <div className="col-4 col-md-2 d-flex align-items-center justify-content-center border border-2 border-dark rounded bg-light p-1">
                     <div className="align-items-center mx-2">To</div>
                   </div>
-                  <input className="col-4 border border-2 border-dark rounded p-1 bg-light" id="output-box" disabled/>
+                  <input className="col-4 border border-2 border-dark rounded p-1 bg-light" id="output-box" value={outbox} disabled/>
                 </div>
               </div>
               <div className="social-align mt-3 p-2 border border-dark border-2 rounded-pill bg-light text-center d-none d-md-block">Check out my portfolio!<br /><a href="https://delicate-croissant-9ec4ef.netlify.app/">Zac's Portfolio</a></div>
@@ -165,3 +184,6 @@ function App() {
 }
 
 export default App;
+
+
+

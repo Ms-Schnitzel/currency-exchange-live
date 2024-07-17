@@ -1,7 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.css';
 import './App.css';
 import Dropdown from './Dropdown.js'
-import $ from 'jquery';
 import {useState, useEffect} from 'react';
 
 export default function Rates() {
@@ -35,29 +34,44 @@ export default function Rates() {
 
   const rateDisplay = () => {
     console.log(ratesTo.index.length);
+    let rootTable = document.getElementById("rate-root");
     for (let i = 0; i < ratesTo.index.length; i++) {
       let indexName = ratesTo.index[i];
-      // console.log(ratesTo.index);
       let indexVal = ratesTo[indexName];
-      $("#rate-root").append(`<div></div>`).addClass("col-12 col-lg-8 d-inline-flex flex-row mx-auto p-2 border bg-black bg-opacity-25 border-3 rounded-3 border-success desk-divide").append(`<p>${indexName}</p><p>${indexVal}</p>`);
-      $("#rate-root p").addClass("col-6 border border-2 border-black bg-success bg-opacity-25")
+      let newDiv = document.createElement("div");
+      let pInName = document.createElement("p");
+      let nameText = document.createTextNode(`${indexName}`);
+      let pInVal = document.createElement("p");
+      let valText = document.createTextNode(`${indexVal}`);
+
+      pInName.classList.add("col-6", "border", "border-2", "border-black", "bg-success", "bg-opacity-25");
+      pInName.append(nameText);
+      pInVal.classList.add("col-6", "border", "border-2", "border-black", "bg-success", "bg-opacity-25");
+      pInVal.append(valText);
+      
+      newDiv.append(pInName, pInVal);
+      newDiv.classList.add("col-12", "col-lg-8", "d-inline-flex", "flex-row", "mx-auto", "px-3", "py-0");
+
+      rootTable.append(newDiv);
     }
+
   }
 
   // apiPull();
   rateDisplay();
 
   const rateClear = (e) => {
-    $('#rate-root').children().remove();
+    let tableRoot = document.getElementById('rate-root');
+    tableRoot.innerHTML = "";
   }
 
   const rateUpdate = () => {
 
-    let tableSet = $('#rates-table').find('select');
+    let tableSet = document.querySelector('#rates-table select');
 
     console.log("tableSet: ", tableSet);
 
-    fetch(`https://api.frankfurter.app/latest?from=${tableSet.val()}`).then((response) => {
+    fetch(`https://api.frankfurter.app/latest?from=${tableSet.value}`).then((response) => {
       if (response.ok) {
         return response.json();
       }
@@ -86,7 +100,7 @@ export default function Rates() {
         >
           <Dropdown />
         </div>
-        <div className="row d-flex flex-row border-test col-12 scroll" id="rate-root">
+        <div className="row d-flex flex-row border-test col-12 scroll pt-3 border bg-black bg-opacity-25 border-3 rounded-3 border-success" id="rate-root">
         </div>
       </div>
     </main>
