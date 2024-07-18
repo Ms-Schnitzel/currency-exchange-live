@@ -100,7 +100,7 @@ function App() {
 
 
   return (
-    <Router basename="/currency-exchange-live"></Router>
+    <Router basename="/currency-exchange-live">
     <main>
       
       <div className="background">
@@ -180,6 +180,7 @@ function App() {
         </div>
       </div>
     </main>
+    </Router>
   );
 }
 
