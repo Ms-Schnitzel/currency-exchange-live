@@ -4,21 +4,16 @@ import './App.css';
 import Dropdown from './Dropdown.js';
 import Rates from './Rates.js';
 import { useState, useEffect } from 'react';
-// import Rates from './Rates.js';
 
 function App() {
 
   const [input, setInput] = useState("usd");
   const [output, setOutput] = useState("usd");
-  const [inbox, setInbox] = useState(0);
   const [outbox, setOutbox] = useState(0);
   const [exchange, setExchange] = useState(3);
 
 
   useEffect(() => {
-    
-    console.log("input : ", input);
-    console.log("output : ", output);
     if (input !== output) {
       apiInput();
       handleOutboxUpdate();
@@ -38,7 +33,7 @@ function App() {
       }
       throw new Error('Request was either a 404 or 500');
     }).then((data) => {
-      console.log("json response: ", data);      
+      // console.log("json response: ", data);      
       let exRate = data.rates[output];
       setExchange(exRate);
 
@@ -64,14 +59,12 @@ function App() {
     return;
   }
 
-  
-
 
   const handleOutboxUpdate = () => {
     let valInbox = document.querySelector('#input-box').value;
     let valOutbox = valInbox * exchange;
     setOutbox(valOutbox);
-    console.log(input);
+    // console.log(input);
     return;
   }
 
