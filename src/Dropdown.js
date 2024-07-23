@@ -4,7 +4,7 @@ import './App.css';
 
 function Dropdown() {
   return (
-    <div className="">
+    // <div className="">
       <select className="form-select d-height bg-light" aria-label="First currency select" defaultValue="USD">
         {/* <option selected className="default" value="" disabled></option> */}
         <option value="AUD">AUD</option>
@@ -36,10 +36,10 @@ function Dropdown() {
         <option value="SGD">SGD</option>
         <option value="THB">THB</option>
         <option value="TRY">TRY</option>
-        <option className="alt-default" value="USD">USD</option>
+        <option value="USD">USD</option>
         <option value="ZAR">ZAR</option>
       </select>
-    </div>
+    // </div>
   )
   
 }
