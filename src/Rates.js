@@ -58,11 +58,10 @@ export default function Rates() {
   }
 
   
-  const handleBaseUpdate = () => {
-    let val = document.querySelector("#table-drop select");
+  const handleBaseUpdate = (e) => {
     apiPull();
-    setBase(val.value);
-    // console.log(rates);
+    setBase(e.target.value);
+    console.log("Base Updated");
   }
 
   
@@ -72,7 +71,7 @@ export default function Rates() {
         <div 
           className="col-6 m-3"
           id="table-drop"
-          onChange={() => handleBaseUpdate()}
+          onChange={handleBaseUpdate}
         >
           <Dropdown />
         </div>
