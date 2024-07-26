@@ -1,8 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 
-import 'bootstrap/dist/css/bootstrap.css';
-import './App.css';
+
 import Dropdown from './Dropdown.js'
 import {useState, useEffect} from 'react';
 
@@ -71,9 +70,9 @@ export default function Rates() {
         <div 
           className="col-6 m-3"
           id="table-drop"
-          onChange={handleBaseUpdate}
+          // onChange={handleBaseUpdate}
         >
-          <Dropdown />
+          <Dropdown onChange={handleBaseUpdate} />
         </div>
         <div 
           className="row d-flex flex-row border-test col-12 scroll pt-3 border bg-black bg-opacity-25 border-3 rounded-3 border-success" 

@@ -1,11 +1,15 @@
-import 'bootstrap/dist/css/bootstrap.css';
-import './App.css';
 
 
-function Dropdown() {
+
+function Dropdown(props) {
   return (
     // <div className="">
-      <select className="form-select d-height bg-light" aria-label="First currency select" defaultValue="USD">
+      <select 
+        className="form-select d-height bg-light" 
+        aria-label="First currency select" 
+        defaultValue="USD"
+        onChange={props.onChange}
+      >
         {/* <option selected className="default" value="" disabled></option> */}
         <option value="AUD">AUD</option>
         <option value="BGN">BGN</option>

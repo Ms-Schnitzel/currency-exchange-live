@@ -118,12 +118,8 @@ function App() {
               {/* Currency set box */}
               <div className="row mt-2 mt-md-5 px-md-3 py-5 border border-3 border-dark rounded-top-5 border-bottom-0 bg-secondary bg-gradient">
                 <div className="d-flex flex-row justify-content-around">
-                  <div 
-                  className="col-4" 
-                  id="input-drop"
-                  onChange={() => handleDropUpdate()}
-                  >
-                    <Dropdown />
+                  <div className="col-4" id="input-drop">
+                    <Dropdown onChange={handleDropUpdate} />
                   </div>
                   <div className="col-4 col-md-2 p-1 d-flex align-items-center justify-content-center border border-dark rounded bg-light">
                     <div className="align-items-center mx-1">To</div>
@@ -134,12 +130,8 @@ function App() {
                       <i className="fa-solid fa-arrow-right-arrow-left"></i>
                     </button>
                   </div>
-                  <div 
-                  className="col-4" 
-                  id="output-drop"
-                  onChange={() => handleDropUpdate()}
-                  >
-                    <Dropdown />
+                  <div className="col-4" id="output-drop">
+                    <Dropdown onChange={handleDropUpdate} />
                   </div>
                 </div>
               </div>
