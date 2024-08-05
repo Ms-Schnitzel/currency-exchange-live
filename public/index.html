@@ -26,6 +26,19 @@
     -->
     <script src="https://kit.fontawesome.com/940d6c38b4.js" crossorigin="anonymous"></script>
     <title>Currency Converter</title>
+    <script type="text/javascript">
+      (function(l) {
+        console.log(l.search)
+        if (l.search[1] === '/' ) {
+          var decoded = l.search.slice(1).split('&').map(function(s) { 
+            return s.replace(/~and~/g, '&')
+          }).join('?');
+          window.history.replaceState(null, null,
+              l.pathname.slice(0, -1) + decoded + l.hash
+          );
+        }
+      }(window.location))
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
