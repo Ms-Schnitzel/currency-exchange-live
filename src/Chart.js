@@ -1,8 +1,5 @@
-
-import { useState, useEffect } from 'react';
-import Dropdown from './Dropdown.js';
 import Chart from 'chart.js/auto';
+import { useState, useEffect } from 'react';
 
-function Chart() {
 
-}
+function NewChart({chartData})

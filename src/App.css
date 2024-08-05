@@ -84,3 +84,7 @@ body {
 .social-align {
   align-self: flex-end;
 }
+
+.days-width {
+  width: 130px;
+}

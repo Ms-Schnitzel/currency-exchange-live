@@ -4,15 +4,41 @@ import Dropdown from './Dropdown.js';
 import Rates from './Rates.js';
 import { useState, useEffect } from 'react';
 
+
 function App() {
 
-  const [input, setInput] = useState("usd");
-  const [output, setOutput] = useState("usd");
+  const [input, setInput] = useState("USD");
+  const [output, setOutput] = useState("USD");
   const [outbox, setOutbox] = useState(0);
   const [exchange, setExchange] = useState(3);
+  const [dates, setDates] = useState({
+    today: "",
+    previous: ""
+  })
+  // const [timeframe, setTimeframe] = useState(0);
+  const [chartData, setChartData] = useState([]);
+  // const [chartData, setChartData] = useState({
+  //   labels: ``,
+  //   datasets: [
+  //     {
+  //       label: ``,
+  //       data: ``,
+  //       fill: false,
+  //       borderColor: 'rgb(75, 192, 192)',
+  //       tension: 0.1
+  //     }
+  //   ]
+  // })
 
 
   useEffect(() => {
+    // handleDateSet(90);
+    apiHistory();
+    // handleChartUpdate();
+    console.log("chart data: ", chartData);
+    // console.log("today: ", today);
+    // console.log("previous: ", previous);
+    console.log("both: ", dates);
     if (input !== output) {
       apiInput();
       handleOutboxUpdate();
@@ -22,7 +48,7 @@ function App() {
       handleOutboxUpdate();
       return;
     }
-  }, [input, output, exchange]);
+  }, [input, output, exchange, dates]);
   
 
   const apiInput = async () => {
@@ -42,10 +68,6 @@ function App() {
       console.log(error);
     })
   }
-
-  //======================================================================================
-
-
 
 
   const handleDropUpdate = () => {
@@ -88,6 +110,187 @@ function App() {
     
     handleDropUpdate();
   }
+
+
+    //======================================================================================
+
+
+
+  const handleDateSet = (e) => {
+    let n = e.target.value;
+    let today = new Date();
+
+    let presentDate = {
+      day: today.getDate(),
+      month: today.getMonth() + 1,
+      year: today.getFullYear()
+    }
+    if (presentDate.day < 10) {
+      presentDate.day = '0' + presentDate.day;
+    }
+    if (presentDate.month < 10) {
+      presentDate.month = '0' + presentDate.month;
+    }
+
+    const newPresent = {...presentDate};
+
+
+    let past = new Date();
+    past.setDate(past.getDate() - Math.abs(parseInt(n)));
+
+    let pastDate = {
+      day: past.getDate(),
+      month: past.getMonth() + 1,
+      year: past.getFullYear()
+    }
+    if (pastDate.day < 10) {
+      pastDate.day = '0' + pastDate.day;
+    }
+    if (pastDate.month < 10) {
+      pastDate.month = '0' + pastDate.month;
+    }
+
+    const newPast = {...pastDate};
+
+    setDates({
+      today: `${newPresent.year}-${newPresent.month}-${newPresent.day}`,
+      previous: `${newPast.year}-${newPast.month}-${newPast.day}`
+    })
+
+  }
+
+
+  const apiHistory = async () => {
+    if (input === output) {
+      console.log("please select your currencies")
+    } else {
+      fetch(`https://api.frankfurter.app/${dates.previous}..${dates.today}?from=${input}&to=${output}`).then((response) => {
+        if (response.ok) {
+          return response.json();
+        }
+        throw new Error('Request was either a 404 or 500');
+      }).then((data) => {
+        console.log("json response: ", data);  
+        let historyArray = [];
+        for (let [key, value] of Object.entries(data.rates)) {
+          let newVal = value[output];
+          let oldRate = {
+            date: key,
+            rate: newVal
+          }
+          // console.log(oldRate);
+          historyArray = [...historyArray, oldRate];
+        }
+        console.log(historyArray);
+
+        const newHistory = [...historyArray];
+        // const historyMapped = newHistory.map(row => row.date);
+        
+        setChartData({
+          ...chartData,
+          history: newHistory
+        });
+        // setChartData({
+        //   labels: historyMapped,
+        //   datasets: [
+        //     {
+        //       label: ``,
+        //       data: ``,
+        //       fill: false,
+        //       borderColor: 'rgb(75, 192, 192)',
+        //       tension: 0.1
+        //     }
+        //   ]
+        // });
+
+        return
+
+      }).catch((error) => {
+        console.log(error);
+      })
+    }
+  }
+
+  // const handleChartUpdate = async () => {
+  //   const data = chartData.history;
+  //   // console.log("chart history: ", data);
+  //   const canvasId = document.getElementById('rates');
+  //   // if (canvasId)
+
+  //   let newLineChart = new Chart(
+  //     canvasId,
+  //     {
+  //       type: 'line',
+  //       data: {
+  //         labels: data.map(row => row.date),
+  //         datasets: [
+  //           {
+  //             label: `Rate of ${input} to ${output}`,
+  //             data: data.map(row => row.rate),
+  //             fill: false,
+  //             borderColor: 'rgb(75, 192, 192)',
+  //             tension: 0.1
+  //           }
+  //         ]
+  //       }
+  //     }
+  //   )
+
+  //   if (typeof newLineChart !== "undefined") {
+  //     newLineChart.destroy();
+  //   }
+
+  //   newLineChart
+
+  //   // let existingChart = document.getElementById('rates');
+  //   // function removeData(chart) {
+  //   //   chart.data.labels.pop();
+  //   //   chart.data.datasets.forEach((dataset) => {
+  //   //     dataset.data.pop();
+  //   //   });
+  //   //   chart.update();
+  //   // }
+  //   // function addData(chart, label, newData) {
+  //   //   chart.data.labels.push(label);
+  //   //   chart.data.datasets.forEach((dataset) => {
+  //   //     dataset.data.push(newData);
+  //   //   });
+  //   //   chart.update();
+  //   // }
+
+  //   // removeData(existingChart);
+  //   // addData(existingChart, data.rate, data.date);
+  // }
+
+  // const handleChartUpdate = async () => {
+  //   const data = history;
+  //   buildChart = (labels, data, label) => {
+  //     const chartRef = this.chartRef.current.getContext("2d");
+
+  //     if (typeof this.chart !== "undefined") {
+  //       this.chart.destroy();
+  //     }
+
+  //     this.chart = new Chart(this.chartRef.current.getContext("2d"),
+  //   {
+  //       type: 'line',
+  //       data: {
+  //         labels,
+  //         datasets: [
+  //           {
+  //             label: label,
+  //             data,
+  //             fill: false,
+  //             tension: 0,
+  //           }
+  //         ]
+  //       },
+  //       options: {
+  //         responsive: true,
+  //       }
+  //   })
+  //   }
+  // }
 
 
 
@@ -152,6 +355,51 @@ function App() {
                   <input className="col-4 border border-2 border-dark rounded p-1 bg-light" id="output-box" value={outbox} disabled/>
                 </div>
               </div>
+
+              {/* Chart Add-in */}
+              <div className="h1 mt-4 text-center">Historical Exchange Rate</div>
+              <div className="row mt-2 mb-4 px-3 py-5 border border-dark rounded-5 ">
+                <div className="d-inline-flex justify-content-center align-items-center flex-md-row flex-column">
+                  <p className="mb-1 py-2 px-2 text-center">The rate history for converting {input} to {output} over the last</p> 
+                  <div className="input-group days-width">
+                    <select 
+                      className="form-select" 
+                      aria-label="Set history timeframe"
+                      id="daysAddon"
+                      defaultValue="--"
+                      onChange={handleDateSet}
+                      // use state for this next time, will make the chart easier to render
+                    >
+                      <option value="--" disabled>--</option>
+                      <option value="30">30</option>
+                      <option value="60">60</option>
+                      <option value="90">90</option>
+                    </select>
+                    <span className="input-group-text" htmlFor="daysAddon">Days</span>
+                  </div>
+                </div>
+                <div>From {dates.previous} to {dates.today}</div>
+                {/* <div><Charting /></div> */}
+                <div>
+                  <canvas id="rates"></canvas>
+                  {/* <Chart 
+                    type= 'line'
+                    data= {{
+                      labels: history.map(row => row.date),
+                      datasets: [
+                        {
+                          label: `Rate of ${input} to ${output}`,
+                          data: history.map(row => row.rate),
+                          fill: false,
+                          borderColor: 'rgb(75, 192, 192)',
+                          tension: 0.1
+                        }
+                      ]
+                    }}
+                  /> */}
+                </div>
+              </div>
+
               <div className="social-align mt-3 p-2 border border-dark border-2 rounded-pill bg-light text-center d-none d-md-block">Check out my portfolio!<br /><a href="https://delicate-croissant-9ec4ef.netlify.app/">Zac's Portfolio</a></div>
             </div>
 
