@@ -1,9 +1,13 @@
 import 'bootstrap/dist/css/bootstrap.css';
 import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";import 'bootstrap/dist/css/bootstrap.css';
 import './App.css';
+import React from "react";
+import Chart from "chart.js/auto";
+import { Line } from "react-chartjs-2";
 import Dropdown from './Dropdown.js';
 import Rates from './Rates.js';
 import { useState, useEffect } from 'react';
+
 
 
 function App() {
@@ -15,31 +19,18 @@ function App() {
   const [dates, setDates] = useState({
     today: "",
     previous: ""
-  })
-  // const [timeframe, setTimeframe] = useState(0);
-  const [chartData, setChartData] = useState([]);
-  // const [chartData, setChartData] = useState({
-  //   labels: ``,
-  //   datasets: [
-  //     {
-  //       label: ``,
-  //       data: ``,
-  //       fill: false,
-  //       borderColor: 'rgb(75, 192, 192)',
-  //       tension: 0.1
-  //     }
-  //   ]
-  // })
+  });
+  const [chartData, setChartData] = useState([
+    {
+      id: 1,
+      date: "--",
+      rate: 0
+    }
+  ]);
 
 
   useEffect(() => {
-    // handleDateSet(90);
     apiHistory();
-    // handleChartUpdate();
-    console.log("chart data: ", chartData);
-    // console.log("today: ", today);
-    // console.log("previous: ", previous);
-    console.log("both: ", dates);
     if (input !== output) {
       apiInput();
       handleOutboxUpdate();
@@ -160,7 +151,6 @@ function App() {
 
   }
 
-
   const apiHistory = async () => {
     if (input === output) {
       console.log("please select your currencies")
@@ -179,30 +169,14 @@ function App() {
             date: key,
             rate: newVal
           }
-          // console.log(oldRate);
           historyArray = [...historyArray, oldRate];
         }
-        console.log(historyArray);
+
+        console.log("history: ", historyArray);
 
         const newHistory = [...historyArray];
-        // const historyMapped = newHistory.map(row => row.date);
         
-        setChartData({
-          ...chartData,
-          history: newHistory
-        });
-        // setChartData({
-        //   labels: historyMapped,
-        //   datasets: [
-        //     {
-        //       label: ``,
-        //       data: ``,
-        //       fill: false,
-        //       borderColor: 'rgb(75, 192, 192)',
-        //       tension: 0.1
-        //     }
-        //   ]
-        // });
+        setChartData(newHistory);
 
         return
 
@@ -212,89 +186,7 @@ function App() {
     }
   }
 
-  // const handleChartUpdate = async () => {
-  //   const data = chartData.history;
-  //   // console.log("chart history: ", data);
-  //   const canvasId = document.getElementById('rates');
-  //   // if (canvasId)
-
-  //   let newLineChart = new Chart(
-  //     canvasId,
-  //     {
-  //       type: 'line',
-  //       data: {
-  //         labels: data.map(row => row.date),
-  //         datasets: [
-  //           {
-  //             label: `Rate of ${input} to ${output}`,
-  //             data: data.map(row => row.rate),
-  //             fill: false,
-  //             borderColor: 'rgb(75, 192, 192)',
-  //             tension: 0.1
-  //           }
-  //         ]
-  //       }
-  //     }
-  //   )
-
-  //   if (typeof newLineChart !== "undefined") {
-  //     newLineChart.destroy();
-  //   }
-
-  //   newLineChart
-
-  //   // let existingChart = document.getElementById('rates');
-  //   // function removeData(chart) {
-  //   //   chart.data.labels.pop();
-  //   //   chart.data.datasets.forEach((dataset) => {
-  //   //     dataset.data.pop();
-  //   //   });
-  //   //   chart.update();
-  //   // }
-  //   // function addData(chart, label, newData) {
-  //   //   chart.data.labels.push(label);
-  //   //   chart.data.datasets.forEach((dataset) => {
-  //   //     dataset.data.push(newData);
-  //   //   });
-  //   //   chart.update();
-  //   // }
-
-  //   // removeData(existingChart);
-  //   // addData(existingChart, data.rate, data.date);
-  // }
-
-  // const handleChartUpdate = async () => {
-  //   const data = history;
-  //   buildChart = (labels, data, label) => {
-  //     const chartRef = this.chartRef.current.getContext("2d");
-
-  //     if (typeof this.chart !== "undefined") {
-  //       this.chart.destroy();
-  //     }
-
-  //     this.chart = new Chart(this.chartRef.current.getContext("2d"),
-  //   {
-  //       type: 'line',
-  //       data: {
-  //         labels,
-  //         datasets: [
-  //           {
-  //             label: label,
-  //             data,
-  //             fill: false,
-  //             tension: 0,
-  //           }
-  //         ]
-  //       },
-  //       options: {
-  //         responsive: true,
-  //       }
-  //   })
-  //   }
-  // }
-
-
-
+ 
   return (
     <Router basename="/currency-exchange-live">
     <main>
@@ -370,7 +262,6 @@ function App() {
                       id="daysAddon"
                       defaultValue="--"
                       onChange={handleDateSet}
-                      // use state for this next time, will make the chart easier to render
                     >
                       <option value="--" disabled>--</option>
                       <option value="30">30</option>
@@ -381,33 +272,24 @@ function App() {
                   </div>
                 </div>
                 <div>From {dates.previous} to {dates.today}</div>
-                {/* <div><Charting /></div> */}
-                <div>
-                  <canvas id="rates"></canvas>
-                  {/* <Chart 
-                    type= 'line'
-                    data= {{
-                      labels: history.map(row => row.date),
+
+                <div className="line-chart">
+                  <Line 
+                    data={{
+                      labels: chartData.map((data) => data.date),
                       datasets: [
                         {
-                          label: `Rate of ${input} to ${output}`,
-                          data: history.map(row => row.rate),
-                          fill: false,
-                          borderColor: 'rgb(75, 192, 192)',
-                          tension: 0.1
-                        }
-                      ]
+                          label: "Rate",
+                          data: chartData.map((data) => data.rate),
+                        },
+                      ],
                     }}
-                  /> */}
+                  />
                 </div>
               </div>
 
               <div className="social-align mt-3 p-2 border border-dark border-2 rounded-pill bg-light text-center d-none d-md-block">Check out my portfolio!<br /><a href="https://delicate-croissant-9ec4ef.netlify.app/">Zac's Portfolio</a></div>
             </div>
-
-            <footer>
-              {/* <div className="position-fixed end-50">Socials</div> */}
-            </footer>
             
           </div>
         </div>
