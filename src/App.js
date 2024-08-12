@@ -14,6 +14,7 @@ function App() {
 
   const [input, setInput] = useState("USD");
   const [output, setOutput] = useState("USD");
+  const [inbox, setInbox] = useState(0);
   const [outbox, setOutbox] = useState(0);
   const [exchange, setExchange] = useState(3);
   const [dates, setDates] = useState({
@@ -40,7 +41,7 @@ function App() {
       handleOutboxUpdate();
       return;
     }
-  }, [input, output, exchange, dates]);
+  }, [inbox, input, output, exchange, dates]);
   
 
   const apiInput = async () => {
@@ -62,45 +63,50 @@ function App() {
   }
 
 
-  const handleDropUpdate = () => {
-    let valIn1 = document.querySelector('#input-drop select').value;
-    setInput(valIn1);
-    let valOut1 = document.querySelector('#output-drop select').value;
-    setOutput(valOut1);
-    handleOutboxUpdate();
+  const handleInputUpdate = (e) => {
+    const valIn = e.target.value;
+    setInput(valIn);
+    
+    return;
+  }
+  const handleOutputUpdate = (e) => {
+    const valOut = e.target.value;
+    setOutput(valOut);
     
     return;
   }
 
-
-  const handleOutboxUpdate = () => {
-    let valInbox = document.querySelector('#input-box').value;
-    let valOutbox = valInbox * exchange;
-    setOutbox(valOutbox);
-    // console.log(input);
-    return;
+  const handleInboxUpdate = (e) => {
+    const valInbox = e.target.value;
+    setInbox(valInbox);
   }
 
-  let timer;
-  function conDelay() {
-    clearTimeout(timer);
-    timer = setTimeout(() => {
-      handleOutboxUpdate();
-    }, 500);
-    return;
+  const handleOutboxUpdate = () => {
+    const valOutbox = inbox * exchange;
+    setOutbox(valOutbox);
   }
 
 
   const handleValSwitch = () => {
-    let boxIn = document.querySelector("#input-drop select");
-    let boxOut = document.querySelector("#output-drop select");
-    let valIn = boxIn.value;
-    let valOut = boxOut.value;
+    const putIn = input;
+    const putOut = output;
+    const boxIn = inbox;
+    const boxOut = outbox;
 
-    boxIn.value = valOut;
-    boxOut.value = valIn;
-    
-    handleDropUpdate();
+    setInput(putOut);
+    setOutput(putIn);
+    setInbox(boxOut);
+
+    let timer;
+    function conDelay(val) {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        setOutbox(val);
+      }, 100);
+      return;
+    }
+    conDelay(boxIn);
+
   }
 
 
@@ -216,7 +222,7 @@ function App() {
               <div className="row mt-2 mt-md-5 px-md-3 py-5 border border-3 border-dark rounded-top-5 border-bottom-0 bg-secondary bg-gradient">
                 <div className="d-flex flex-row justify-content-around">
                   <div className="col-4" id="input-drop">
-                    <Dropdown onChange={handleDropUpdate} />
+                    <Dropdown onChange={handleInputUpdate} value={input} />
                   </div>
                   <div className="col-4 col-md-2 p-1 d-flex align-items-center justify-content-center border border-dark rounded bg-light">
                     <div className="align-items-center mx-1">To</div>
@@ -228,7 +234,7 @@ function App() {
                     </button>
                   </div>
                   <div className="col-4" id="output-drop">
-                    <Dropdown onChange={handleDropUpdate} />
+                    <Dropdown onChange={handleOutputUpdate} value={output} />
                   </div>
                 </div>
               </div>
@@ -240,8 +246,8 @@ function App() {
                   className="col-4 border border-2 border-dark rounded p-2" 
                   id="input-box" 
                   type="number"
-                  
-                  onChange={() => conDelay()}
+                  value={inbox}
+                  onChange={handleInboxUpdate}
                   />
                   <div className="col-4 col-md-2 d-flex align-items-center justify-content-center border border-2 border-dark rounded bg-light p-1">
                     <div className="align-items-center mx-2">To</div>

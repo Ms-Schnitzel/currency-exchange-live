@@ -7,7 +7,7 @@ function Dropdown(props) {
       <select 
         className="form-select d-height bg-light" 
         aria-label="First currency select" 
-        defaultValue="USD"
+        value={props.value}
         onChange={props.onChange}
       >
         {/* <option selected className="default" value="" disabled></option> */}
